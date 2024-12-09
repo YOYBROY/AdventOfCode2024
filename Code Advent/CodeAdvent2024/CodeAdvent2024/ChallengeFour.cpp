@@ -3,72 +3,80 @@
 #include <iostream>
 #include <vector>
 
-void ChallengeFour::RunChallengeFour(string fileName, string wordToFind)
+void ChallengeFour::RunChallengeFour(string fileName, string wordToFind, bool part1)
 {
 	/*
 	Challenge 4:
 	Create a 2D Vector and store every column and row in it
 
-	iterate through the 2D vector and find every "X", then iterate in all directions around it to search for M, if one is found then store the direction and go again etc.
-
-	X=0
-	M=1
-	A=2
-	S=3
+	iterate through the 2D vector and find every "X",
+	then iterate in all directions around it to search for M,
+	if one is found then search again in the same direction
 	*/
 
-	int numOfRows = fileReader.GetLineCount(fileName);
-	int numOfColumns = fileReader.GetColumnCountAt(fileName, 1);
+	vector<vector<char>> wordSearch = Create2DSearchArray(fileName);
 
-	vector<vector<char>>wordSearch(numOfRows, vector<char>(numOfColumns, 0));
-
-	wordSearch = Populate2DArray(wordSearch, fileName, numOfColumns, numOfRows);
-
-	cout << SearchForWord(wordSearch, wordToFind) << endl;
+	cout << SearchForWord(wordSearch, wordToFind, part1) << endl;
 	system("pause");
-	//cout << wordSearch[3][0] << endl;
-
-	//DirectionSearch(wordSearch, 'M', 0, 1, 2, 1);
 }
 
-vector<vector<char>> ChallengeFour::Populate2DArray(vector<vector<char>> vecToPopulate, string fileToSourceFrom, int width, int height)
+//Adds all elements of a 2D array into one given a specific string
+vector<vector<char>> ChallengeFour::Create2DSearchArray(string sourceFile)
 {
+	//Get width and height of the input file
+	int width = fileReader.GetLineCount(sourceFile);
+	int height = fileReader.GetColumnCountAt(sourceFile, 1);
+
+	//create 2D vector with specified width and height
+	vector<vector<char>>myVector(height, vector<char>(width, 0));
+
 	//2Dvectors do height first and then width vector[height][width]
 	for (int i = 0; i < height; i++)
 	{
-		string currentLine = fileReader.GetLineContentsAt(fileToSourceFrom, i + 1);
+		string currentLine = fileReader.GetLineContentsAt(sourceFile, i + 1);
 		for (int j = 0; j < width; j++)
 		{
-			vecToPopulate[i][j] = currentLine[j];
-			cout << vecToPopulate[i][j];
+			myVector[i][j] = currentLine[j];
+			cout << myVector[i][j];
 		}
 		cout << endl;
 	}
-	return vecToPopulate;
+	return myVector;
 }
 
-int ChallengeFour::SearchForWord(vector<vector<char>> wordSearch, string wordToSearch) 
+int ChallengeFour::SearchForWord(vector<vector<char>> wordSearch, string wordToSearch, bool part1)
 {
 	//Go through every element to get a positions vector that stores all positions of the letter 'X'
 	vector<vector<int>> xPositions;
-	
+
 	int count = 0;
 
 	for (int i = 0; i < wordSearch.size(); i++)
 	{
 		for (int j = 0; j < wordSearch[0].size(); j++)
 		{
-			if (wordSearch[i][j] == wordToSearch[0])
+			if (part1)
 			{
-				count += CircleSearch(wordSearch, wordToSearch, j, i);
+				if (wordSearch[i][j] == wordToSearch[0])
+				{
+					if (part1) { count += CircleSearch(wordSearch, wordToSearch, j, i); }
+					else { count += XSearch(wordSearch, wordToSearch, j, i); }
+				}
+			}
+			else
+			{
+				if (wordSearch[i][j] == wordToSearch[1])
+				{
+					if (part1) { count += CircleSearch(wordSearch, wordToSearch, j, i); }
+					else { count += XSearch(wordSearch, wordToSearch, j, i); }
+				}
 			}
 		}
 	}
-
 	return count;
 }
 
-int ChallengeFour::CircleSearch(vector<vector<char>> wordSearch, string wordToSearch, int xPos, int yPos) 
+int ChallengeFour::CircleSearch(vector<vector<char>> wordSearch, string wordToSearch, int xPos, int yPos)
 {
 	int result = 0;
 	//search all 8 positions around the given coordinate and then continue a search in that direction if you hit desired character ("M")
@@ -81,6 +89,40 @@ int ChallengeFour::CircleSearch(vector<vector<char>> wordSearch, string wordToSe
 		}
 	}
 	return result;
+}
+
+bool ChallengeFour::XSearch(vector<vector<char>> wordSearch, string wordToSearch, int xPos, int yPos)
+{
+	int result = 0;
+	//search all 8 positions around the given coordinate and then continue a search in that direction if you hit desired character ("M")
+	for (int x = -1; x <= 1; x++)
+	{
+		int stopCount = 0;
+		for (int y = -1; y <= 1; y++)
+		{
+			if (stopCount > 1) continue;
+			if (x == 0 || y == 0) continue;
+			char foundChar = ReturnCharAtPos(wordSearch, xPos, yPos, x, y);
+			if (foundChar == wordToSearch[0])
+			{
+				int reverseX = x * -1;
+				int reverseY = y * -1;
+				char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, reverseX, reverseY);
+				if (otherFoundChar == wordToSearch[2]) result++;
+				stopCount++;
+			}
+			else if (foundChar == wordToSearch[2])
+			{
+				int reverseX = x * -1;
+				int reverseY = y * -1;
+				char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, reverseX, reverseY);
+				if (otherFoundChar == wordToSearch[0]) result++;
+				stopCount++;
+			}
+		}
+	}
+	if (result == 2) return true;
+	else return false;
 }
 
 bool ChallengeFour::DirectionSearch(vector<vector<char>> wordSearch, string wordToSearch, int posInWord, int xPos, int yPos, int xDir, int yDir)
@@ -97,13 +139,8 @@ bool ChallengeFour::DirectionSearch(vector<vector<char>> wordSearch, string word
 	int newYPos = yPos - yDir;
 	int newXPos = xPos + xDir;
 
-	if (newXPos == 0 && newYPos == 1)
-	{
-		newXPos = newXPos;
-	}
-
 	//Check that direction is valid in vector
-	if (newYPos < 0 || newYPos >= wordSearch.size())    { return false; }
+	if (newYPos < 0 || newYPos >= wordSearch.size()) { return false; }
 	if (newXPos < 0 || newXPos >= wordSearch[0].size()) { return false; }
 
 	if (posInWord < wordToSearch.size())
@@ -116,4 +153,19 @@ bool ChallengeFour::DirectionSearch(vector<vector<char>> wordSearch, string word
 		}
 	}
 	return false;
+}
+
+char ChallengeFour::ReturnCharAtPos(vector<vector<char>> wordSearch, int xPos, int yPos, int xDir, int yDir)
+{
+
+	//calculate new Coordinate
+	int newYPos = yPos - yDir;
+	int newXPos = xPos + xDir;
+
+	//Check that direction is valid in vector
+	if (newYPos < 0 || newYPos >= wordSearch.size()) { return NULL; }
+	if (newXPos < 0 || newXPos >= wordSearch[0].size()) { return NULL; }
+
+	//Search in a specific direction for a specific letter
+	return wordSearch[newYPos][newXPos];
 }
