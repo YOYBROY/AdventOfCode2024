@@ -1,0 +1,3 @@
+S.M|M.M|S.S|M.S|M.M|M.A|A.A|S.M|XSM|XXS|
+.A.|.A.|.A.|.A.|.A.|.A.|.A.|.A.|MAM|MAM|
+S.M|S.S|M.M|M.S|M.S|M.S|S.M|S.M|SAM|MAS|

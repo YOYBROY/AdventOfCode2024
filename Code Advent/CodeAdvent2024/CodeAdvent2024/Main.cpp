@@ -25,5 +25,7 @@ int main()
 	//true == 173731097, false == 93729253
 	//challenge3->RunChallengeThree("Day3Input.txt", false);
 
-	challenge4->RunChallengeFour("Day4Input.txt", "XMAS", false);
+	//true == 2500, false == 1933
+	//challenge4->RunChallengeFour("Day4Input.txt", "XMAS", true);
+	challenge4->RunChallengeFour("Day4Input.txt", "MAS", false);
 }
