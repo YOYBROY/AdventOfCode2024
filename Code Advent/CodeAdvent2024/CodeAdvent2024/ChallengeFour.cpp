@@ -16,10 +16,11 @@ void ChallengeFour::RunChallengeFour(string fileName, string wordToFind, bool pa
 	if one is found then search again in the same direction
 	*/
 
+	//Initialize word searcg input into a 2D vector
 	vector<vector<char>> wordSearch = Create2DSearchArray(fileName);
 
+	//Find number of times word exists in wordSearch
 	cout << SearchForWord(wordSearch, wordToFind, part1) << endl;
-	system("pause");
 }
 
 //Adds all elements of a 2D array into one given a specific string
@@ -46,25 +47,26 @@ vector<vector<char>> ChallengeFour::Create2DSearchArray(string sourceFile)
 	return myVector;
 }
 
+//Begin searching by finding all starting letters and checking the rest of the word
 int ChallengeFour::SearchForWord(vector<vector<char>> wordSearch, string wordToSearch, bool part1)
 {
 	int count = 0;
-
 	for (int i = 0; i < wordSearch.size(); i++)
 	{
 		for (int j = 0; j < wordSearch[0].size(); j++)
 		{
-			if      (wordSearch[i][j] == wordToSearch[1 - part1] && part1) count += CircleSearch(wordSearch, wordToSearch, j, i);
+			//Searches for a word in the word search if true, if else then search for X formation of a word
+			if (wordSearch[i][j] == wordToSearch[1 - part1] && part1) count += CircleSearch(wordSearch, wordToSearch, j, i);
 			else if (wordSearch[i][j] == wordToSearch[1] && !part1) count += XSearch(wordSearch, wordToSearch, j, i);
 		}
 	}
 	return count;
 }
 
+//search all 8 positions around the given coordinate and then continue a search in that direction if you hit desired character ("M")
 int ChallengeFour::CircleSearch(vector<vector<char>> wordSearch, string wordToSearch, int xPos, int yPos)
 {
 	int result = 0;
-	//search all 8 positions around the given coordinate and then continue a search in that direction if you hit desired character ("M")
 	for (int x = -1; x <= 1; x++)
 	{
 		for (int y = -1; y <= 1; y++)
@@ -76,60 +78,46 @@ int ChallengeFour::CircleSearch(vector<vector<char>> wordSearch, string wordToSe
 	return result;
 }
 
+//searches for x formation around a given letter
 bool ChallengeFour::XSearch(vector<vector<char>> wordSearch, string wordToSearch, int xPos, int yPos)
 {
 	//Cull the edges off the search
-	if (xPos == 0 || xPos == wordSearch[0].size() - 1) return false;
 	if (yPos == 0 || yPos == wordSearch.size() - 1) return false;
+	if (xPos == 0 || xPos == wordSearch[0].size() - 1) return false;
 
 	int result = 0;
 	int stopCount = 0;
 
-	//search all 8 positions around the given coordinate and then continue a search in that direction if you hit desired character ("M")
-	for (int x = -1; x <= 1; x++)
+	//search top left and top right
+	for (int y = -1; y <= 1; y++)
 	{
-		if (stopCount > 1) break;
-		for (int y = -1; y <= 1; y++)
+		if (y == 0) continue;
+		//if the letter found is equal to the firt or last letters of the searching word
+		char foundChar = ReturnCharAtPos(wordSearch, xPos, yPos, -1, y);
+		if (foundChar == wordToSearch[0])
 		{
-			if (x == 0 || y == 0) continue;
-			char foundChar = ReturnCharAtPos(wordSearch, xPos, yPos, x, y);
-			if (foundChar == wordToSearch[0])
-			{
-				int reverseX = x * -1;
-				int reverseY = y * -1;
-				char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, reverseX, reverseY);
-				if (otherFoundChar == wordToSearch[2]) result++;
-				stopCount++;
-			}
-			else if (foundChar == wordToSearch[2])
-			{
-				int reverseX = x * -1;
-				int reverseY = y * -1;
-				char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, reverseX, reverseY);
-				if (otherFoundChar == wordToSearch[0]) result++;
-				stopCount++;
-			}
-			else return false;
+			//check opposite side
+			int reverseY = y * -1;
+			char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, 1, reverseY);
+			if (otherFoundChar == wordToSearch[2]) result++;
+			stopCount++;
 		}
+		else if (foundChar == wordToSearch[2])
+		{
+			//check opposite side
+			int reverseY = y * -1;
+			char otherFoundChar = ReturnCharAtPos(wordSearch, xPos, yPos, 1, reverseY);
+			if (otherFoundChar == wordToSearch[0]) result++;
+			stopCount++;
+		}
+		else return false;
 	}
-	if (result == 2)
-	{
-		//cout << yPos << " : " << xPos << endl;
-		return true;
-	}
+	if (result == 2) return true;
 	else return false;
 }
 
 bool ChallengeFour::DirectionSearch(vector<vector<char>> wordSearch, string wordToSearch, int posInWord, int xPos, int yPos, int xDir, int yDir)
 {
-	//cout << "xPos: " << xPos << endl;
-	//cout << "yPos: " << yPos << endl;
-	//cout << "xDir: " << xDir << endl;
-	//cout << "yDir: " << yDir << endl;
-	//cout << wordSearch[yPos - yDir][xPos - xDir];
-	//cout << "newYPos: " << newYPos << endl;
-	//cout << "newXPos: " << newXPos << endl;
-
 	//calculate new Coordinate
 	int newYPos = yPos - yDir;
 	int newXPos = xPos + xDir;

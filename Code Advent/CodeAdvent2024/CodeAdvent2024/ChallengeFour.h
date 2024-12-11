@@ -5,10 +5,10 @@
 
 using namespace std;
 
-class ChallengeFour {
+class ChallengeFour
+{
 private:
 	FileReader fileReader;
-	string wordToSearch = "XMAS";
 public:
 	void RunChallengeFour(string fileName, string wordToFind, bool part1);
 	vector<vector<char>> Create2DSearchArray(string fileToSourceFrom);

@@ -19,6 +19,7 @@ void ChallengeThree::RunChallengeThree(string fileName, bool part1)
 		multiply each array element with its corresponding one in the other array
 		Add all of these together for the final result.
 	*/
+	cout << "hello" << endl;
 
 	//Get the whole input file as a string
 	string inputString = fileReader.ReadFromFile(fileName);
