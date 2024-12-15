@@ -36,5 +36,6 @@ int main()
 	//true == 4814, false == 5448
 	//challenge5->RunChallengeFive("Day5Input1.txt", "Day5Input2.txt", true);
 
+	//true == 4454 false == 
 	challenge6->RunChallengeSix("Day6Input.txt");
 }

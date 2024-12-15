@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-vector<vector<char>> activeMap;
+vector<vector<char>> stableMap;
 vector<int> currentPosition{0, 0};
 bool canMove = true;
 
@@ -29,17 +29,17 @@ void ChallengeSix::RunChallengeSix(string input)
 	If it is a filled space # then call the turn function
 	If it is an invalid location on the map then that is the final position of the guard
 	count up the number of X's in the final list.
-
-	Attempt 1: 4453 was too low
 	*/
 
-	activeMap = challengeFour.Create2DSearchArray(input);
+	stableMap = challengeFour.Create2DSearchArray(input);
 	currentPosition = FindFirstPosition('^');
 
-	while (canMove)
-	{
-		CheckAction();
-	}
+	vector<vector<char>> activeMap = SimulateMapPos(stableMap, 2);
+
+	//while (canMove)
+	//{
+	//	CheckAction();
+	//}
 
 	int result = 0;
 
@@ -58,11 +58,11 @@ void ChallengeSix::RunChallengeSix(string input)
 
 vector<int> ChallengeSix::FindFirstPosition(char startingCharacter)
 {
-	for (int i = 0; i < activeMap.size(); i++)
+	for (int i = 0; i < stableMap.size(); i++)
 	{
-		for (int j = 0; j < activeMap[i].size(); j++)
+		for (int j = 0; j < stableMap[i].size(); j++)
 		{
-			if (activeMap[i][j] == startingCharacter)
+			if (stableMap[i][j] == startingCharacter)
 			{
 				return { j, i };
 			}
@@ -73,7 +73,7 @@ vector<int> ChallengeSix::FindFirstPosition(char startingCharacter)
 
 void ChallengeSix::CheckAction()
 {
-	char nextChar = challengeFour.ReturnCharAtPos(activeMap, currentPosition[0], currentPosition[1], GetCurrentDirection()[0], GetCurrentDirection()[1]);
+	char nextChar = challengeFour.ReturnCharAtPos(stableMap, currentPosition[0], currentPosition[1], GetCurrentDirection()[0], GetCurrentDirection()[1]);
 	if (nextChar == NULL)
 	{
 		MarkLocation(currentPosition[0], currentPosition[1], 'X');
@@ -131,7 +131,7 @@ vector<int> ChallengeSix::GetCurrentDirection()
 
 void ChallengeSix::MarkLocation(int xPos, int yPos, char toMark)
 {
-	activeMap[yPos][xPos] = toMark;
+	stableMap[yPos][xPos] = toMark;
 }
 
 void ChallengeSix::MoveForward()
@@ -140,4 +140,14 @@ void ChallengeSix::MoveForward()
 	vector<int> newPosition = { currentPosition[0] + GetCurrentDirection()[0], currentPosition[1] - GetCurrentDirection()[1] };
 	currentPosition = newPosition;
 	MarkLocation(currentPosition[0], currentPosition[1], '^');
+}
+
+vector<vector<char>> ChallengeSix::SimulateMapPos(vector<vector<char>> stableMap, int numOfMoves)
+{
+	for (int i = 0; i < numOfMoves; i++)
+	{
+		CheckAction();
+		MarkLocation(currentPosition[0], currentPosition[1], 'O');
+	}
+	return 
 }

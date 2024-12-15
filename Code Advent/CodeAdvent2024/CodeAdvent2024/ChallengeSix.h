@@ -18,5 +18,6 @@ public:
 	void ChangeDirection();
 	vector<int> GetCurrentDirection();
 	void MoveForward();
+	vector<vector<char>> SimulateMapPos(vector<vector<char>> stableMap, int numOfMoves);
 	void MarkLocation(int xPos, int yPos, char toMark);
 };
