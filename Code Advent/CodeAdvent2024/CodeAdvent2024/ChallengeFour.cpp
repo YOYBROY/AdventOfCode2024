@@ -40,9 +40,9 @@ vector<vector<char>> ChallengeFour::Create2DSearchArray(string sourceFile)
 		for (int j = 0; j < width; j++)
 		{
 			myVector[i][j] = currentLine[j];
-			//cout << myVector[i][j];
+			// cout << myVector[i][j];
 		}
-		//cout << endl;
+		// cout << endl;
 	}
 	return myVector;
 }
@@ -143,6 +143,10 @@ char ChallengeFour::ReturnCharAtPos(vector<vector<char>> wordSearch, int xPos, i
 	//calculate new Coordinate
 	int newYPos = yPos - yDir;
 	int newXPos = xPos + xDir;
+
+	//Check that direction is valid in vector
+	if (newYPos < 0 || newYPos >= wordSearch.size()) { return false; }
+	if (newXPos < 0 || newXPos >= wordSearch[0].size()) { return false; }
 
 	//Search in a specific direction for a specific letter
 	return wordSearch[newYPos][newXPos];

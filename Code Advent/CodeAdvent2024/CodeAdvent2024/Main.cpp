@@ -3,6 +3,7 @@
 #include "ChallengeThree.h"
 #include "ChallengeFour.h"
 #include "ChallengeFive.h"
+#include "ChallengeSix.h"
 #include "FileReader.h"
 #include <iostream>
 #include <string>
@@ -17,6 +18,7 @@ int main()
 	ChallengeThree* challenge3{};
 	ChallengeFour* challenge4{};
 	ChallengeFive* challenge5{};
+	ChallengeSix* challenge6{};
 
 	//true == 3569916, false == 26407426
 	//challenge1->RunChallengeOne("Day1Input1.txt", "Day2Input2.txt", false);
@@ -32,5 +34,7 @@ int main()
 	//challenge4->RunChallengeFour("Day4Input.txt", "MAS", false);
 
 	//true == 4814, false == 5448
-	challenge5->RunChallengeFive("Day5Input1.txt", "Day5Input2.txt", true);
+	//challenge5->RunChallengeFive("Day5Input1.txt", "Day5Input2.txt", true);
+
+	challenge6->RunChallengeSix("Day6Input.txt");
 }
