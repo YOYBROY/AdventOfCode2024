@@ -31,5 +31,6 @@ int main()
 	//challenge4->RunChallengeFour("Day4Input.txt", "XMAS", true);
 	//challenge4->RunChallengeFour("Day4Input.txt", "MAS", false);
 
-	challenge5->RunChallengeFive("Day5Input1.txt", "Day5Input2.txt");
+	//true == 4814, false == 5448
+	challenge5->RunChallengeFive("Day5Input1.txt", "Day5Input2.txt", true);
 }

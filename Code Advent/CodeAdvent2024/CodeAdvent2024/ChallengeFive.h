@@ -6,8 +6,9 @@ class ChallengeFive
 private: 
 	FileReader fileReader;
 public:
-	void RunChallengeFive(string ruleSetInput, string orderSetInput);
+	void RunChallengeFive(string ruleSetInput, string orderSetInput, bool part1);
 	vector<vector<int>> GetRuleList(string ruleSet);
 	vector<vector<int>> GetOrderSet(string orderSetInput);
-	bool ValidateLine(vector<vector<int>> ruleSet, vector<vector<int>> orderSet, int lineNum);
+	int ValidateLine(vector<vector<int>> ruleSet, vector<int> lineToCheck, bool part1);
+	vector<int> SwitchSpots(vector<int> currentLine, int itemAPos, int itemBPos, int itemAVal, int itemBVal);
 };

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void ChallengeFive::RunChallengeFive(string ruleSetInput, string orderSetInput)
+void ChallengeFive::RunChallengeFive(string ruleSetInput, string orderSetInput, bool part1)
 {
 	/*
 	Challenge Five:
@@ -22,22 +22,18 @@ void ChallengeFive::RunChallengeFive(string ruleSetInput, string orderSetInput)
 	
 	int result = 0;
 
+	
 	for (int i = 0; i < orderSet.size(); i++)
-	{
-		if(!ValidateLine(ruleSet, orderSet, i)) continue;
-		int positionOfMiddle = orderSet[i].size() * 0.5f;
-		result += orderSet[i][positionOfMiddle];
-		cout << result << endl;
+	{	
+		if (part1) result += ValidateLine(ruleSet, orderSet[i], part1);
+		else
+		{
+			//This is incredibly dumb!
+			result += ValidateLine(ruleSet, orderSet[i], part1);
+			result -= ValidateLine(ruleSet, orderSet[i], !part1);
+		}
 	}
-
-	//for (int i = 0; i < orderSet.size(); i++)
-	//{
-	//	for (int j = 0; j < orderSet[i].size(); j++)
-	//	{
-	//		cout << orderSet[i][j];
-	//	}
-	//	cout << endl;
-	//}
+	cout << result << endl;
 }
 
 vector<vector<int>> ChallengeFive::GetRuleList(string ruleSet)
@@ -119,7 +115,7 @@ vector<vector<int>> ChallengeFive::GetOrderSet(string orderSet)
 	return return2DVector;
 }
 
-bool ChallengeFive::ValidateLine(vector<vector<int>> ruleSet, vector<vector<int>> orderSet, int lineNum)
+int ChallengeFive::ValidateLine(vector<vector<int>> ruleSet, vector<int> lineToCheck, bool part1)
 {
 	/*
 	foreach pair
@@ -129,18 +125,46 @@ bool ChallengeFive::ValidateLine(vector<vector<int>> ruleSet, vector<vector<int>
 	
 	return true
 	*/
-	vector<int> lineToCheck = orderSet[lineNum];
+	bool firstGo = true;
 
-	for (int i = lineToCheck.size() - 1; i > 0; i--) {
-		for (int j = 0; j < ruleSet.size(); j++) {
-			if (lineToCheck[i] == ruleSet[j][0]) {
-				for (int s = 0; s < i; s++) {
-					if (lineToCheck[s] == ruleSet[j][1]) {
-						return false;
+	//for every int in the lineToCheck running backwards
+	for (int i = lineToCheck.size() - 1; i > 0; i--) 
+	{
+		//and every row of rules in the ruleset
+		for (int j = 0; j < ruleSet.size(); j++) 
+		{
+			//if the current line[i] == an item in the first column of the ruleset
+			if (lineToCheck[i] == ruleSet[j][0])
+			{
+				//loop through every element in the line that appears before the currentInt
+				for (int s = 0; s < i; s++)
+				{
+					//And check if that element == the element in the second column of the ruleset
+					if (lineToCheck[s] == ruleSet[j][1])
+					{
+						//if its part1, then return 0 to be added to the count.
+						if (part1) return 0;
+						//if its not part 1, then send the line off to get reordered and then check validation again.
+						else
+						{
+							vector<int> newOrder = SwitchSpots(lineToCheck, i, s, lineToCheck[i], lineToCheck[s]);
+							firstGo = false;
+							return ValidateLine(ruleSet, newOrder, false);
+						}
 					}
 				}
 			}
 		}
 	}
-	return true;
+	//if it is a valid line, then find the middle value and return it.
+	int positionOfMiddle = lineToCheck.size() * 0.5f;
+	return lineToCheck[positionOfMiddle];
+}
+
+vector<int> ChallengeFive::SwitchSpots(vector<int> currentLine, int itemAPos, int itemBPos, int itemAVal, int itemBVal)
+{
+	int tempNum = itemAVal;
+	currentLine[itemAPos] = itemBVal;
+	currentLine[itemBPos] = tempNum;
+	return currentLine;
 }
