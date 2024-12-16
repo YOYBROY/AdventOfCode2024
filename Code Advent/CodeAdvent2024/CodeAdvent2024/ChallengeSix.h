@@ -14,10 +14,14 @@ private:
 public:
 	void RunChallengeSix(string input);
 	vector<int> FindFirstPosition(char startingCharacter);
-	void CheckAction();
+	bool CheckAction(bool markX);
 	void ChangeDirection();
 	vector<int> GetCurrentDirection();
-	void MoveForward();
-	vector<vector<char>> SimulateMapPos(vector<vector<char>> stableMap, int numOfMoves);
+	void MoveForward(bool markX);
+	void SimulateMapState(int numOfMoves);
+	void SetMap(string input);
+	void ResetMap(string input);
+	void ResetPosition();
+	void PrintActiveMap();
 	void MarkLocation(int xPos, int yPos, char toMark);
 };

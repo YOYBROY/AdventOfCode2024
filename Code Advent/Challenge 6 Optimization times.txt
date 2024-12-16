@@ -1,0 +1,8 @@
+All run 100 positions
+
+First Attempt: 48 Seconds
+
+Second Attempt: 97 Seconds
+
+Third Attempt: 69 Seconds
+

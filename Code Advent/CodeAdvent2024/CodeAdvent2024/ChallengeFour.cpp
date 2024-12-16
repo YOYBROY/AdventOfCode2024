@@ -148,6 +148,7 @@ char ChallengeFour::ReturnCharAtPos(vector<vector<char>> wordSearch, int xPos, i
 	if (newYPos < 0 || newYPos >= wordSearch.size()) { return false; }
 	if (newXPos < 0 || newXPos >= wordSearch[0].size()) { return false; }
 
+	char returnChar = wordSearch[newYPos][newXPos];
 	//Search in a specific direction for a specific letter
-	return wordSearch[newYPos][newXPos];
+	return returnChar;
 }

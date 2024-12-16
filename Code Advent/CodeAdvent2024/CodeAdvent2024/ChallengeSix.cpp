@@ -1,10 +1,11 @@
 #include "ChallengeSix.h"
 
-
+#include <chrono>
 #include <iostream>
 #include <vector>
 
 vector<vector<char>> stableMap;
+vector<vector<char>> activeMap;
 vector<int> currentPosition{0, 0};
 bool canMove = true;
 
@@ -30,39 +31,79 @@ void ChallengeSix::RunChallengeSix(string input)
 	If it is an invalid location on the map then that is the final position of the guard
 	count up the number of X's in the final list.
 	*/
-
-	stableMap = challengeFour.Create2DSearchArray(input);
-	currentPosition = FindFirstPosition('^');
-
-	vector<vector<char>> activeMap = SimulateMapPos(stableMap, 2);
-
-	//while (canMove)
-	//{
-	//	CheckAction();
-	//}
+	auto beg = chrono::high_resolution_clock::now();
 
 	int result = 0;
+
+	vector<vector<int>> guardPositions;
+
+	//Set up map
+	SetMap(input);
+	ResetPosition();
+	//get all the positions that the guard moves to in the unedited map.
+	while (canMove)
+	{
+		CheckAction(true);
+	}
 
 	//cout << currentPosition[0] << " , " << currentPosition[1] << endl;
 	for (int i = 0; i < activeMap.size(); i++)
 	{
 		for (int j = 0; j < activeMap[i].size(); j++)
 		{
-			if (activeMap[i][j] == 'X') result++;
-			cout << activeMap[i][j];
+			if (activeMap[i][j] == 'X')
+			{
+				guardPositions.push_back({ i, j });
+			}
 		}
-		cout << endl;
+	}
+
+	for (int i = 0; i <= guardPositions.size(); i++)
+	{
+		//set activeMap to base input
+		ResetMap(input);
+		ResetPosition();
+		vector<int> currentVec = guardPositions[i];
+		activeMap[currentVec[0]][currentVec[1]] = 'O';
+		int hitStopper = 0;
+		int counter = 0;
+		while (canMove)
+		{
+			hitStopper += CheckAction(true);
+			if (hitStopper > 5) { result++; break; }
+			counter++;
+			if (counter > 15000) { result++; break; }
+		}
+		cout << i << endl;
 	}
 	cout << result << endl;
+
+	//for (int i = 0; i < activeMap.size(); i++)
+	//{
+	//	for (int j = 0; j < activeMap[i].size(); j++)
+	//	{
+	//		if (activeMap[i][j] == 'X') result++;
+	//		cout << activeMap[i][j];
+	//	}
+	//	cout << endl;
+	//}
+
+	//Print elapsed time
+	auto end = chrono::high_resolution_clock::now();
+
+	auto duration = chrono::duration_cast<chrono::seconds>(end - beg);
+
+	// Displaying the elapsed time
+	std::cout << "Elapsed Time: " << duration.count();
 }
 
 vector<int> ChallengeSix::FindFirstPosition(char startingCharacter)
 {
-	for (int i = 0; i < stableMap.size(); i++)
+	for (int i = 0; i < activeMap.size(); i++)
 	{
-		for (int j = 0; j < stableMap[i].size(); j++)
+		for (int j = 0; j < activeMap[i].size(); j++)
 		{
-			if (stableMap[i][j] == startingCharacter)
+			if (activeMap[i][j] == startingCharacter)
 			{
 				return { j, i };
 			}
@@ -71,9 +112,12 @@ vector<int> ChallengeSix::FindFirstPosition(char startingCharacter)
 	return { 0, 0 };
 }
 
-void ChallengeSix::CheckAction()
+bool ChallengeSix::CheckAction(bool notSimulation)
 {
-	char nextChar = challengeFour.ReturnCharAtPos(stableMap, currentPosition[0], currentPosition[1], GetCurrentDirection()[0], GetCurrentDirection()[1]);
+	//char currentChar = challengeFour.ReturnCharAtPos(activeMap, currentPosition[0], currentPosition[1], 0, 0);
+	vector<int> tempVec = GetCurrentDirection();
+	char nextChar = challengeFour.ReturnCharAtPos(activeMap, currentPosition[0], currentPosition[1], tempVec[0], tempVec[1]);
+
 	if (nextChar == NULL)
 	{
 		MarkLocation(currentPosition[0], currentPosition[1], 'X');
@@ -81,13 +125,19 @@ void ChallengeSix::CheckAction()
 	}
 	if (nextChar == '.' || nextChar == 'X')
 	{
-		MoveForward();
+		if (notSimulation) MarkLocation(currentPosition[0], currentPosition[1], 'X');
+		MoveForward(notSimulation);
 	}
 	if (nextChar == '#')
 	{
 		ChangeDirection();
 	}
-
+	if (nextChar == 'O')
+	{
+		ChangeDirection();
+		return true;
+	}
+	return false;
 }
 
 void ChallengeSix::ChangeDirection()
@@ -131,23 +181,51 @@ vector<int> ChallengeSix::GetCurrentDirection()
 
 void ChallengeSix::MarkLocation(int xPos, int yPos, char toMark)
 {
-	stableMap[yPos][xPos] = toMark;
+	activeMap[yPos][xPos] = toMark;
 }
 
-void ChallengeSix::MoveForward()
+void ChallengeSix::MoveForward(bool notSimulation)
 {
-	MarkLocation(currentPosition[0], currentPosition[1], 'X');
 	vector<int> newPosition = { currentPosition[0] + GetCurrentDirection()[0], currentPosition[1] - GetCurrentDirection()[1] };
 	currentPosition = newPosition;
-	MarkLocation(currentPosition[0], currentPosition[1], '^');
+	if (notSimulation)MarkLocation(currentPosition[0], currentPosition[1], '^');
 }
 
-vector<vector<char>> ChallengeSix::SimulateMapPos(vector<vector<char>> stableMap, int numOfMoves)
+void ChallengeSix::SimulateMapState(int numOfMoves)
 {
 	for (int i = 0; i < numOfMoves; i++)
 	{
-		CheckAction();
-		MarkLocation(currentPosition[0], currentPosition[1], 'O');
+		CheckAction(false);
 	}
-	return 
+	MarkLocation(currentPosition[0], currentPosition[1], 'O');
+}
+
+void ChallengeSix::SetMap(string input)
+{
+	stableMap = challengeFour.Create2DSearchArray(input);
+	activeMap = challengeFour.Create2DSearchArray(input);
+}
+
+void ChallengeSix::ResetMap(string input)
+{
+	activeMap = stableMap;
+}
+
+void ChallengeSix::ResetPosition()
+{
+	currentPosition = FindFirstPosition('^');
+	currentDirection = UP;
+	canMove = true;
+}
+
+void ChallengeSix::PrintActiveMap()
+{
+	for (int i = 0; i < activeMap.size(); i++)
+	{
+		for (int j = 0; j < activeMap[i].size(); j++)
+		{
+			cout << activeMap[i][j];
+		}
+		cout << endl;
+	}
 }
