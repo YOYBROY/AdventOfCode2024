@@ -130,6 +130,7 @@
     <ClCompile Include="ChallengeFive.cpp" />
     <ClCompile Include="ChallengeFour.cpp" />
     <ClCompile Include="ChallengeOne.cpp" />
+    <ClCompile Include="ChallengeSeven.cpp" />
     <ClCompile Include="ChallengeSix.cpp" />
     <ClCompile Include="ChallengeThree.cpp" />
     <ClCompile Include="ChallengeTwo.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="ChallengeFive.h" />
     <ClInclude Include="ChallengeFour.h" />
     <ClInclude Include="ChallengeOne.h" />
+    <ClInclude Include="ChallengeSeven.h" />
     <ClInclude Include="ChallengeSix.h" />
     <ClInclude Include="ChallengeThree.h" />
     <ClInclude Include="ChallengeTwo.h" />
