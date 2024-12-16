@@ -58,7 +58,7 @@ void ChallengeSix::RunChallengeSix(string input)
 		}
 	}
 
-	for (int i = 0; i <= guardPositions.size(); i++)
+	for (int i = 0; i < guardPositions.size(); i++)
 	{
 		//set activeMap to base input
 		ResetMap(input);
